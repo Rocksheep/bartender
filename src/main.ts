@@ -7,6 +7,7 @@ import commands from './Discord/Commands';
 
 const app: express.Application = express();
 const client = new DiscordJsClient();
+const expressPort = process.env.PORT || 80;
 
 client.addOnMessageListener((msg) => {
     const possibleCommand = msg.content.split(' ')[0];
@@ -22,9 +23,9 @@ client.addOnMessageListener((msg) => {
 client.connect(process.env.DISCORD_TOKEN!);
 
 app.get('/', function (req, res) {
-    res.send('Greetings');
+    res.send('How can I serve you, master?');
 });
 
-app.listen(80, () => {
+app.listen(expressPort, () => {
     console.log('App listening on port 80');
 });
