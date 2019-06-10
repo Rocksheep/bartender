@@ -6,7 +6,7 @@
     "author": "RockSheep",
     "scripts": {
         "build": "tsc",
-        "serve": "node build/main.js"
+        "start": "node build/main.js"
     },
     "dependencies": {
         "discord.js": "^11.5.1",
