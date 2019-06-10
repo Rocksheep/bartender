@@ -1,0 +1,19 @@
+{
+    "name": "bartender",
+    "version": "0.0.1",
+    "description": "The bartender bot for discord",
+    "main": "src/main.js",
+    "author": "RockSheep",
+    "scripts": {
+        "build": "tsc",
+        "serve": "node build/main.js"
+    },
+    "dependencies": {
+        "discord.js": "^11.5.1",
+        "dotenv": "^8.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^12.0.7",
+        "typescript": "^3.5.1"
+    }
+}
