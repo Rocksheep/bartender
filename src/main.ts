@@ -1,18 +1,18 @@
 require('dotenv').config();
-import { Message, Client } from "discord.js";
+import { DiscordJsClient } from "./Discord/Clients/DiscordJsClient";
+import commands from './Discord/Commands';
 
-const client = new Client;
+const client = new DiscordJsClient();
 
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}`);
+client.addOnMessageListener((msg) => {
+    const possibleCommand = msg.content.split(' ')[0];
+    Object.values(commands).forEach(command => {
+        if (possibleCommand === command.signature) {
+            const instance = new command();
+
+            msg.channel.send(instance.getContent(), instance.getOptions());
+        }
+    });
 });
 
-client.on('message', (msg) => {
-    if (msg.content === 'ping') {
-        msg.reply('pong').then((message: Message | Array<Message>) => {
-            console.log(message);
-        });
-    }
-});
-
-client.login(process.env.DISCORD_TOKEN);
+client.connect(process.env.DISCORD_TOKEN!);
