@@ -1,4 +1,4 @@
-import { Command } from "../Interfaces/Command";
+import { Command } from "@/Discord/Interfaces/Command";
 
 export class PingPong implements Command {
     public static signature = '.ping'; 

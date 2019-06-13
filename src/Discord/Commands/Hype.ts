@@ -1,4 +1,4 @@
-import { Command } from "../Interfaces/Command";
+import { Command } from "@/Discord/Interfaces/Command";
 
 export class Hype implements Command {
     public static signature: string = '.hype';
@@ -13,10 +13,16 @@ export class Hype implements Command {
     }
 
     getOptions(): Object {
-        const index = Math.floor(Math.random() * this.images.length);
-
         return {
-            file: this.images[index],
+            file: this.images[this.randomIndex],
         };
+    }
+
+    get randomIndex(): number {
+        return Math.floor(Math.random() * this.numberOfImages);
+    }
+
+    get numberOfImages(): number {
+        return this.images.length;
     }
 }
