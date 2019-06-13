@@ -1,4 +1,4 @@
-import { Hype } from "@/Discord/Commands/Hype";
+import {Hype} from "../../src/Discord/Commands/Hype";
 
 describe('Hype command', () => {
     it('returns empty content', () => {

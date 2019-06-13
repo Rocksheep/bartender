@@ -7,6 +7,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node build/main.js",
+        "build-and-start": "tsc && node build/main.js",
         "test": "jest"
     },
     "dependencies": {

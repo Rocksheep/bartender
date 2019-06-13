@@ -1,16 +1,12 @@
-import { Command } from "@/Discord/Interfaces/Command";
+import {AbstractCommand} from "./AbstractCommand";
 
-export class Hype implements Command {
+export class Hype extends AbstractCommand {
     public static signature: string = '.hype';
 
     private images: Array<string> = [
         'https://i.imgur.com/SwCGeRF.jpg',
         'https://i.imgur.com/iXkB5rx.jpg',
     ];
-
-    getContent(): string {
-        return '';
-    }
 
     getOptions(): Object {
         return {
