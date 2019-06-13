@@ -1,13 +1,9 @@
-import { Command } from "@/Discord/Interfaces/Command";
+import {AbstractCommand} from "@/Discord/Commands/AbstractCommand";
 
-export class PingPong implements Command {
+export class PingPong extends AbstractCommand {
     public static signature = '.ping'; 
 
     getContent(): string {
         return 'pong';
-    }
-
-    getOptions(): Object {
-        return {};
     }
 }
