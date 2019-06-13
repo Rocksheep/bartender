@@ -13,7 +13,7 @@ client.addOnMessageListener((msg) => {
     const possibleCommand = msg.content.split(' ')[0];
     Object.values(commands).forEach(command => {
         if (possibleCommand === command.signature) {
-            const instance = new command();
+            const instance = new command(msg.content);
 
             msg.channel.send(instance.getContent(), instance.getOptions());
         }
