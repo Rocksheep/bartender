@@ -1,5 +1,6 @@
 import { AbstractCommand } from './AbstractCommand';
 import { PokemonLeagueCardCodeRepository } from '../Repositories/PokemonLeagueCardCodes/PokemonLeagueCardCodeRepository';
+import { CommandResultType } from '../Clients/CommandResultType';
 
 export class PokemonLeagueCard extends AbstractCommand {
     public static signature: string = '.plc';
@@ -15,6 +16,23 @@ export class PokemonLeagueCard extends AbstractCommand {
 
     public static build(author: string, message: string): PokemonLeagueCard {
         return new PokemonLeagueCard(author, message, new PokemonLeagueCardCodeRepository());
+    }
+
+    public requiresMembers(): boolean {
+        return true;
+    }
+
+    public commandResultType(): CommandResultType {
+        const splitMessage = this.message.split(' ');
+        // Shift of the signature
+        splitMessage.shift();
+        const subcommand = splitMessage.shift() || null;
+
+        if (subcommand === 'list') {
+            return CommandResultType.EMBED;
+        }
+
+        return CommandResultType.TEXT;
     }
 
     public async getContent(): Promise<string> {
@@ -33,7 +51,9 @@ export class PokemonLeagueCard extends AbstractCommand {
             }
         }
 
-        if (subcommand === 'set') {
+        if (subcommand === 'delete') {
+            return this.deleteCode();
+        } else if (subcommand === 'set') {
             const friendCode = splitMessage.shift() || null;
 
             if (!friendCode) {
@@ -54,6 +74,41 @@ export class PokemonLeagueCard extends AbstractCommand {
             } catch (err) {
                 return 'De gebruiker heeft nog geen code.';
             }
+        }
+    }
+
+    public async getEmbed() {
+        return {
+            title: 'Pokemon League Card Codes',
+            color: 0xFF0000,
+            fields: await this.listCodes()
+        };
+    }
+
+    private async listCodes(): Promise<Array<any>> {
+        const codes = await this.codeRepository.all();
+
+        return codes.filter((code) => {
+            return code.username in this.members;
+        }).map((code) => {
+            const username = this.members[code.username].username;
+
+            return {
+                name: username,
+                value: code.code
+            }
+        });
+    }
+
+    private async deleteCode(): Promise<string> {
+        try {
+            await this.codeRepository.deleteCode(this.author);
+
+            return 'Je code is verwijderd';
+        } catch (err) {
+            console.log(err);
+
+            return 'Er is iets mis gegaan, probeer het later opnieuw';
         }
     }
 

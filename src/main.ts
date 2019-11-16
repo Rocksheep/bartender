@@ -1,9 +1,10 @@
-require('dotenv').config();
-
+import { CommandResultType } from './Discord/Clients/CommandResultType';
 import express from 'express';
 
-import { DiscordJsClient } from "./Discord/Clients/DiscordJsClient";
+import { DiscordJsClient } from './Discord/Clients/DiscordJsClient';
 import commands from './Discord/Commands';
+
+require('dotenv').config();
 
 const app: express.Application = express();
 const client = new DiscordJsClient();
@@ -15,8 +16,24 @@ client.addOnMessageListener(async (msg) => {
     for (const command of Object.values(commands)) {
         if (possibleCommand === command.signature) {
             const instance = command.build(msg.author.id, msg.content);
+            if (instance.requiresMembers()) {
+                const members = msg.guild.members.reduce((acc, member) => {
+                    acc[member.id] = {
+                        id: member.id,
+                        username: member.nickname || member.user.username
+                    };
 
-            msg.channel.send(await instance.getContent(), instance.getOptions());
+                    return acc;
+                }, {});
+
+                instance.setMembers(members);
+            }
+
+            if (instance.commandResultType() === CommandResultType.TEXT) {
+                msg.channel.send(await instance.getContent(), instance.getOptions());
+            } else {
+                msg.channel.send({ embed: await instance.getEmbed() });
+            }
         }
     }
 });
