@@ -1,6 +1,7 @@
 import { AbstractCommand } from './AbstractCommand';
 import { IFriendCodeRepository } from '../Repositories/FriendCodes/IFriendCodeRepository';
 import { FriendCodeRepository } from '../Repositories/FriendCodes/FriendCodeRepository';
+import { CommandResultType } from '../Clients/CommandResultType';
 
 export class FriendCode extends AbstractCommand {
     public static signature: string = '.fc';
@@ -16,6 +17,23 @@ export class FriendCode extends AbstractCommand {
 
     public static build(author: string, message: string): FriendCode {
         return new FriendCode(author, message, new FriendCodeRepository());
+    }
+
+    public requiresMembers(): boolean {
+        return true;
+    }
+
+    public commandResultType(): CommandResultType {
+        const splitMessage = this.message.split(' ');
+        // Shift of the signature
+        splitMessage.shift();
+        const subcommand = splitMessage.shift() || null;
+
+        if (subcommand === 'list') {
+            return CommandResultType.EMBED;
+        }
+
+        return CommandResultType.TEXT;
     }
 
     public async getContent(): Promise<string> {
@@ -35,13 +53,15 @@ export class FriendCode extends AbstractCommand {
         }
 
         if (subcommand === 'set') {
-            const friendCode = splitMessage.shift() || null;
+            const friendCode = splitMessage.shift() || '';
+            const correctedCode = friendCode.toUpperCase();
+            const regex = new RegExp(/(SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})/);
 
-            if (!friendCode) {
-                return 'Ik heb geen code gevonden. Ben je deze misschien vergeten?';
+            if (!regex.test(correctedCode)) {
+                return 'Ik heb geen code gevonden. Ben je hem correct ingevoerd?';
             }
 
-            await this.friendCodeRepository.storeFriendCode(this.author, friendCode);
+            await this.friendCodeRepository.storeFriendCode(this.author, correctedCode);
 
             return 'Je code is toegevoegd!';
         } else {
@@ -56,6 +76,38 @@ export class FriendCode extends AbstractCommand {
                 return 'De gebruiker heeft nog geen code.';
             }
         }
+    }
+
+    public async getEmbed() {
+        return {
+            title: 'Nintendo Switch Friend Codes',
+            color: 0xFC0FC0,
+            fields: await this.listCodes()
+        };
+    }
+
+    private async listCodes(): Promise<Array<any>> {
+        const codes = await this.friendCodeRepository.all();
+
+        return codes.filter((code) => {
+            return code.username in this.members;
+        }).map((code) => {
+            const username = this.members[code.username].username;
+
+            return {
+                name: username,
+                value: code.code
+            }
+        }).sort((a, b) => {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 
     private getUserId(message: string): string {

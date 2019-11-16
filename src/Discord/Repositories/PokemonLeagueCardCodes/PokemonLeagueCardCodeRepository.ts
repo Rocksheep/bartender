@@ -2,7 +2,6 @@ import { Database } from 'sqlite3';
 import { PokemonCode } from '../../Types/PokemonCode';
 
 export class PokemonLeagueCardCodeRepository {
-
     private connect() {
         return new Database('database/bartender.db');
     }

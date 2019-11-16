@@ -54,10 +54,12 @@ export class PokemonLeagueCard extends AbstractCommand {
         if (subcommand === 'delete') {
             return this.deleteCode();
         } else if (subcommand === 'set') {
-            const friendCode = splitMessage.shift() || null;
+            const friendCode = splitMessage.shift() || '';
+            const correctedCode = friendCode.toUpperCase();
+            const regex = new RegExp(/([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{2})/);
 
-            if (!friendCode) {
-                return 'Ik heb geen code gevonden. Ben je deze misschien vergeten?';
+            if (!regex.test(correctedCode)) {
+                return 'Ik heb geen code gevonden. Heb je hem correct ingevoerd?';
             }
 
             await this.codeRepository.storeCode(this.author, friendCode);
@@ -97,6 +99,15 @@ export class PokemonLeagueCard extends AbstractCommand {
                 name: username,
                 value: code.code
             }
+        }).sort((a, b) => {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+
+            return 0;
         });
     }
 
