@@ -7,8 +7,8 @@ export abstract class AbstractCommand implements Command {
         this.message = message;
     }
 
-    public getContent(): string {
-        return '';
+    public async getContent(): Promise<string> {
+        return new Promise((resolve) => resolve(''));
     }
 
     public getOptions(): object {

@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "database/bartender.db"
+  },
+  "test": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  }
+}

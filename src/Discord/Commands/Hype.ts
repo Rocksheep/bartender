@@ -8,6 +8,10 @@ export class Hype extends AbstractCommand {
         'https://i.imgur.com/iXkB5rx.jpg',
     ];
 
+    public static build(author: string, message: string): Hype {
+        return new Hype(message);
+    }
+
     getOptions(): Object {
         return {
             file: this.images[this.randomIndex],

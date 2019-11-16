@@ -9,15 +9,16 @@ const app: express.Application = express();
 const client = new DiscordJsClient();
 const expressPort = process.env.PORT || 80;
 
-client.addOnMessageListener((msg) => {
-    const possibleCommand = msg.content.split(' ')[0];
-    Object.values(commands).forEach(command => {
-        if (possibleCommand === command.signature) {
-            const instance = new command(msg.content);
+client.addOnMessageListener(async (msg) => {
+    const possibleCommand = msg.content.split(' ').shift();
 
-            msg.channel.send(instance.getContent(), instance.getOptions());
+    for (const command of Object.values(commands)) {
+        if (possibleCommand === command.signature) {
+            const instance = command.build(msg.author.id, msg.content);
+
+            msg.channel.send(await instance.getContent(), instance.getOptions());
         }
-    });
+    }
 });
 
 client.connect(process.env.DISCORD_TOKEN!);

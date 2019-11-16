@@ -1,4 +1,4 @@
 export interface Command {
-    getContent(): string;
+    getContent(): Promise<string>;
     getOptions(): Object
 }
