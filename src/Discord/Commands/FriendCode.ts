@@ -58,7 +58,7 @@ export class FriendCode extends AbstractCommand {
             const regex = new RegExp(/(SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})/);
 
             if (!regex.test(correctedCode)) {
-                return 'Ik heb geen code gevonden. Ben je hem correct ingevoerd?';
+                return 'Ik heb geen code gevonden. Heb je hem correct ingevoerd?';
             }
 
             await this.friendCodeRepository.storeFriendCode(this.author, correctedCode);
